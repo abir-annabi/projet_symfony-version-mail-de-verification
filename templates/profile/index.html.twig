@@ -1,0 +1,304 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon Profil{% endblock %}
+
+{% block stylesheets %}
+<style>
+    .profile-card {
+        background: linear-gradient(135deg, var(--beige) 0%, #f8f1e9 100%);
+        border: none;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .profile-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.12);
+    }
+    
+    .profile-header {
+        background: linear-gradient(to right, var(--marron), var(--noir));
+        color: white;
+        padding: 1.5rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .profile-header::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+        transform: rotate(30deg);
+    }
+    
+    .profile-avatar {
+        width: 120px;
+        height: 120px;
+        margin: 0 auto 1rem;
+        background-color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        border: 4px solid white;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .profile-avatar i {
+        font-size: 3.5rem;
+        color: var(--marron);
+    }
+    
+    .profile-name {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .profile-meta {
+        font-size: 0.9rem;
+        opacity: 0.9;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .profile-badge {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: rgba(255,255,255,0.2);
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        backdrop-filter: blur(5px);
+    }
+    
+    .profile-section {
+        padding: 1.5rem;
+    }
+    
+    .section-title {
+        color: var(--marron);
+        font-weight: 600;
+        margin-bottom: 1.25rem;
+        position: relative;
+        display: inline-block;
+    }
+    
+    .section-title::after {
+        content: "";
+        position: absolute;
+        bottom: -8px;
+        left: 0;
+        width: 40px;
+        height: 3px;
+        background: var(--marron);
+        border-radius: 3px;
+    }
+    
+    .info-item {
+        display: flex;
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px dashed rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+    }
+    
+    .info-item:hover {
+        transform: translateX(5px);
+        border-bottom-color: var(--taupe);
+    }
+    
+    .info-icon {
+        width: 36px;
+        height: 36px;
+        background: rgba(109, 76, 65, 0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+        flex-shrink: 0;
+    }
+    
+    .info-icon i {
+        color: var(--marron);
+        font-size: 1rem;
+    }
+    
+    .info-content {
+        flex-grow: 1;
+    }
+    
+    .info-label {
+        font-size: 0.8rem;
+        color: var(--marron);
+        margin-bottom: 0.1rem;
+    }
+    
+    .info-value {
+        font-weight: 500;
+        color: var(--noir);
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
+    
+    .stat-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1rem;
+        text-align: center;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+        transition: all 0.3s ease;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+    }
+    
+    .stat-number {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--marron);
+        margin-bottom: 0.25rem;
+    }
+    
+    .stat-label {
+        font-size: 0.8rem;
+        color: var(--noir);
+        opacity: 0.7;
+    }
+    
+    .action-btns {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+        flex-wrap: wrap;
+    }
+    
+    .btn-profile {
+        border: none;
+        border-radius: 12px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    
+    .btn-profile i {
+        margin-right: 8px;
+        font-size: 1.1rem;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(to right, var(--marron), #8c6a56);
+        color: white;
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(109, 76, 65, 0.3);
+    }
+    
+    .btn-outline {
+        background: white;
+        color: var(--marron);
+        border: 1px solid var(--taupe);
+    }
+    
+    .btn-outline:hover {
+        background: var(--beige);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="profile-card">
+                <div class="profile-header">
+                    <div class="profile-avatar">
+                        <i class="bi bi-person-circle"></i>
+                    </div>
+                    <h2 class="profile-name">{{ app.user.firstName }} {{ app.user.lastName }}</h2>
+                    <div class="profile-meta">Membre depuis {{ app.user.createdAt|date('d/m/Y') }}</div>
+                </div>
+                
+                <div class="profile-section">
+                    <h4 class="section-title">Informations personnelles</h4>
+                    
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="bi bi-envelope"></i>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-label">Email</div>
+                            <div class="info-value">{{ app.user.email }}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="bi bi-calendar-event"></i>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-label">Date de naissance</div>
+                            <div class="info-value">
+                                {{ app.user.birthDate ? app.user.birthDate|date('d/m/Y') : 'Non renseignée' }}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-number">{{ app.user.orders|length }}</div>
+                            <div class="stat-label">Commandes</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">
+                                {% if app.user.panier %}
+                                    {{ app.user.panier.getItemsCount() }}
+                                {% else %}
+                                    0
+                                {% endif %}
+                            </div>
+                            <div class="stat-label">Articles en panier</div>
+                        </div>
+                    </div>
+                    
+                    <div class="action-btns">
+                        <a href="#" class="btn-profile btn-primary">
+                            <i class="bi bi-pencil-square"></i> Modifier le profil
+                        </a>
+                        <a href="#" class="btn-profile btn-outline">
+                            <i class="bi bi-receipt"></i> Historique
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

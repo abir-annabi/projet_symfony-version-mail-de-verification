@@ -1,0 +1,18 @@
+{# templates/emails/confirmation_email.html.twig #}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Confirm Your Email</title>
+</head>
+<body>
+    <h1>Welcome {{ user.firstName ?? user.email }}!</h1>
+    <p>Please confirm your email by clicking the link below:</p>
+    <p>
+        <a href="{{ signedUrl }}">Confirm Email</a>
+    </p>
+
+    <p>This link expires in {{ expiresAt|date('g') }} hour(s).</p>
+    <p>If you didn't register, ignore this email.</p>
+</body>
+</html>

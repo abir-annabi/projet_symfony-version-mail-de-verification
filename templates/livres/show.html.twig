@@ -1,0 +1,201 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Kteby | {{ livre.titre }}{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .book-detail-frame {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            border: 1px solid var(--taupe);
+        }
+
+        .book-compact-header {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .book-cover-compact {
+            width: 180px;
+            height: 270px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 1px solid var(--beige);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+        }
+
+        .default-cover-compact {
+            width: 180px;
+            height: 270px;
+            background: linear-gradient(135deg, var(--beige), var(--taupe));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--marron);
+            font-size: 2.5rem;
+            border-radius: 6px;
+        }
+
+        .book-info-compact {
+            flex: 1;
+        }
+
+        .book-title-compact {
+            font-size: 1.8rem;
+            color: var(--noir);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .book-price-compact {
+            font-size: 1.5rem;
+            color: var(--marron);
+            font-weight: 600;
+            margin: 0.5rem 0;
+        }
+
+        .meta-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .meta-item-compact {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.95rem;
+            color: var(--marron);
+        }
+
+        .meta-item-compact i {
+            color: var(--marron);
+            opacity: 0.8;
+        }
+
+        .book-resume-compact {
+            margin-top: 1.5rem;
+            padding: 1.5rem;
+            background: var(--blanc-creme);
+            border-radius: 6px;
+            border: 1px solid var(--beige);
+            line-height: 1.7;
+            color: var(--noir);
+        }
+
+        .resume-title-compact {
+            font-size: 1.2rem;
+            color: var(--marron);
+            margin-bottom: 0.8rem;
+            font-weight: 500;
+        }
+
+        .action-buttons-compact {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .btn-compact {
+            padding: 0.6rem 1.5rem;
+            border-radius: 5px;
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+
+        .btn-primary-compact {
+            background: var(--marron);
+            color: white;
+            border: 1px solid var(--marron);
+        }
+
+        .btn-primary-compact:hover {
+            background: var(--noir);
+            transform: translateY(-1px);
+        }
+
+        .btn-outline-compact {
+            background: transparent;
+            color: var(--marron);
+            border: 1px solid var(--marron);
+        }
+
+        .btn-outline-compact:hover {
+            background: var(--beige);
+        }
+
+        @media (max-width: 768px) {
+            .book-compact-header {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .meta-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="book-detail-frame">
+    <div class="book-compact-header">
+        {% if livre.image %}
+            <img src="{{ livre.image }}" alt="{{ livre.titre }}" class="book-cover-compact">
+        {% else %}
+            <div class="default-cover-compact">
+                <i class="bi bi-book"></i>
+            </div>
+        {% endif %}
+
+        <div class="book-info-compact">
+            <h1 class="book-title-compact">{{ livre.titre }}</h1>
+            <div class="book-price-compact">{{ livre.prix }} DT</div>
+            
+            <div class="meta-grid">
+                <div class="meta-item-compact">
+                    <i class="bi bi-building"></i>
+                    <span>{{ livre.editeur }}</span>
+                </div>
+                
+                <div class="meta-item-compact">
+                    <i class="bi bi-calendar"></i>
+                    <span>{{ livre.dateEdition|date("d/m/Y") }}</span>
+                </div>
+                
+                <div class="meta-item-compact">
+                    <i class="bi bi-upc-scan"></i>
+                    <span>{{ livre.isbn }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="book-resume-compact">
+        <h3 class="resume-title-compact">Résumé</h3>
+        <p>{{ livre.resume }}</p>
+    </div>
+
+    <div class="action-buttons-compact">
+        <a href="{{ path('app_panier_add', {'id': livre.id}) }}" class="btn-compact btn-primary-compact">
+            <i class="bi bi-cart-plus"></i>
+            Ajouter au panier
+        </a>
+        <a href="{{ path('app_livre_all1') }}" class="btn-compact btn-outline-compact">
+            <i class="bi bi-arrow-left"></i>
+            Retour
+        </a>
+    </div>
+</div>
+{% endblock %}

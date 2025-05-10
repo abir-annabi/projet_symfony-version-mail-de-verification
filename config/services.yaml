@@ -1,0 +1,21 @@
+# config/services.yaml
+parameters:
+    STRIPE_SECRET_KEY: '%env(STRIPE_SECRET_KEY)%'
+    STRIPE_PUBLIC_KEY: '%env(STRIPE_PUBLIC_KEY)%'
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
+            - '../src/Kernel.php'
+
+    # Explicit EmailVerifier service definition
+    App\Security\EmailVerifier:
+        arguments:
+            $twig: '@twig'

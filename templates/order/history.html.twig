@@ -1,0 +1,55 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Historique de commandes{% endblock %}
+
+{% block body %}
+<div class="cart-container">
+    <h1>Votre Historique Littéraire</h1>
+    <p class="cart-subtitle">Les œuvres que vous avez acquises</p>
+
+    {% if orders|length > 0 %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Référence</th>
+                    <th>Date</th>
+                    <th>Statut</th>
+                    <th>Total</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr>
+                    <td>{{ order.reference }}</td>
+                    <td>{{ order.createdAt|date('d/m/Y H') }}</td>
+                    <td>
+                        <span class="badge 
+                            {% if order.status == 'paid' %}bg-success
+                            {% else %}bg-warning{% endif %}">
+                            {{ order.status }}
+                        </span>
+                    </td>
+                    <td>{{ order.total|number_format(2) }} DT</td>
+                    <td>
+                        <a href="{{ path('order_show', {'id': order.id}) }}" 
+                           class="btn-remove">
+                            Détails
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="empty-cart">
+            <div class="empty-cart-icon">📚</div>
+            <h3>Aucune commande trouvée</h3>
+            <p>Votre historique littéraire est vide</p>
+            <a href="{{ path('app_livre_all1') }}" class="btn-continue">
+                Découvrir nos livres
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

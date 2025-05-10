@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Confirmation de commande - {{ order.reference }}{% endblock %}
+
+{% block body %}
+<div class="cart-container">
+    <h1>Confirmation de commande</h1>
+    <p class="cart-subtitle">Merci pour votre achat</p>
+
+    <div class="alert alert-success">
+        <h4 class="alert-heading">Commande #{{ order.reference }} confirmée</h4>
+        <p>Un email de confirmation vous a été envoyé.</p>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <h4>Résumé</h4>
+            <ul class="list-group mb-4">
+                <li class="list-group-item">
+                    <strong>Date :</strong> {{ order.createdAt|date('d/m/Y H:i') }}
+                </li>
+                <li class="list-group-item">
+                    <strong>Total :</strong> {{ order.total|number_format(2) }} DT
+                </li>
+                <li class="list-group-item">
+                    <strong>Statut :</strong> 
+                    <span class="badge bg-success">Payé</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="text-center mt-4">
+        <a href="{{ path('app_livre_all') }}" class="btn-continue">
+            Retour à l'accueil
+        </a>
+        <a href="{{ path('order_history') }}" class="btn-continue ml-2">
+            Voir mes commandes
+        </a>
+    </div>
+</div>
+{% endblock %}
