@@ -1,0 +1,17 @@
+{% block subject %}Réinitialisation de votre mot de passe{% endblock %}
+
+{% block body_html %}
+    <p>Bonjour {{ user.firstName }},</p>
+    
+    <p>Pour réinitialiser votre mot de passe, veuillez cliquer sur le lien suivant :</p>
+    
+    <p>
+<a href="{{ url('app_reset_password', {token: resetToken.token}) }}">
+    Reset your password
+</a>         
+    </p>
+    
+    <p>Ce lien expirera dans {{ resetToken.expirationMessageKey|trans(resetToken.expirationMessageData, 'ResetPasswordBundle') }}.</p>
+    
+    <p>Cordialement,<br>L'équipe Kteby</p>
+{% endblock %}

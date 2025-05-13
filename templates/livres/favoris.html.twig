@@ -1,0 +1,10 @@
+<h1>Mes livres favoris</h1>
+
+<div class="book-gallery">
+    {% for favori in favoris %}
+        {% set livre = favori.livre %}
+        <!-- Réutilise ta carte livre ici -->
+    {% else %}
+        <p>Aucun livre favori pour l’instant.</p>
+    {% endfor %}
+</div>

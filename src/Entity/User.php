@@ -12,6 +12,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use App\Entity\Order;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use SymfonyCasts\Bundle\ResetPassword\Model\ResetPasswordRequestInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
@@ -53,6 +54,39 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private Collection $orders;
 
 
+  
+
+#[ORM\OneToMany(mappedBy: 'user', targetEntity: Favori::class)]
+private Collection $favoris;
+
+
+public function getFavoris(): Collection
+{
+    return $this->favoris;
+}
+
+public function addFavori(Favori $favori): self
+{
+    if (!$this->favoris->contains($favori)) {
+        $this->favoris[] = $favori;
+        $favori->setUser($this);
+    }
+
+    return $this;
+}
+
+public function removeFavori(Favori $favori): self
+{
+    if ($this->favoris->removeElement($favori)) {
+        // set the owning side to null (unless already changed)
+        if ($favori->getUser() === $this) {
+            $favori->setUser(null);
+        }
+    }
+
+    return $this;
+}
+
     #[ORM\Column(type: 'boolean')]
 private bool $isVerified = false;
 
@@ -60,6 +94,10 @@ public function isVerified(): bool
 {
     return $this->isVerified;
 }
+  public function getUser(): object
+    {
+        return $this;
+    }
 
 public function setIsVerified(bool $isVerified): static
 {
@@ -72,6 +110,7 @@ public function setIsVerified(bool $isVerified): static
         $this->createdAt = new \DateTime();
         $this->roles = ['ROLE_USER'];
         $this->orders = new ArrayCollection();
+        $this->favoris = new ArrayCollection();
     }
 
     public function getId(): ?int

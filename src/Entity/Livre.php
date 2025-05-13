@@ -46,6 +46,36 @@ class Livre
     #[ORM\JoinColumn(name: 'cat_id', referencedColumnName: 'id')]
     private ?Categories $categorie = null;
 
+     #[ORM\OneToMany(mappedBy: 'livre', targetEntity: Favori::class)]
+private Collection $favoris;
+
+
+public function getFavori(): Collection
+{
+    return $this->favoris;
+}
+
+public function addFavori(Favori $favori): self
+{
+    if (!$this->favoris->contains($favori)) {
+        $this->favoris[] = $favori;
+        $favori->setLivre($this);
+    }
+
+    return $this;
+}
+
+public function removeFavori(Favori $favori): self
+{
+    if ($this->favoris->removeElement($favori)) {
+        if ($favori->getLivre() === $this) {
+            $favori->setLivre(null);
+        }
+    }
+
+    return $this;
+}
+
     /**
      * @var Collection<int, OrderItem>
      */
@@ -54,6 +84,8 @@ class Livre
 
     public function __construct()
     {
+            $this->favoris = new ArrayCollection();
+
         $this->orderItems = new ArrayCollection();
     }
 

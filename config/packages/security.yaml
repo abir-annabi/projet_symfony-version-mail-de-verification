@@ -23,7 +23,7 @@ security:
                 username_parameter: email  # Correspond au name="email" du formulaire
                 password_parameter: password
                 csrf_token_id: authenticate
-                default_target_path: app_livre_all
+                default_target_path: home
                 always_use_default_target_path: true
                 use_referer: false
                 target_path_parameter: redirect_path
@@ -34,4 +34,4 @@ security:
     access_control:
         - { path: ^/login$, roles: PUBLIC_ACCESS }
         - { path: ^/register$, roles: PUBLIC_ACCESS }
-        - { path: ^/admin, roles: ROLE_USER }
+        - { path: ^/livres, roles: PUBLIC_ACCESS }

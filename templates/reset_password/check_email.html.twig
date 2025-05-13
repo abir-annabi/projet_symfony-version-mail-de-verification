@@ -1,0 +1,82 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Email envoyé | Kteby{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        :root {
+            --blanc-creme: #FFF9F5;
+            --beige: #F5E9E0;
+            --taupe: #D8C4B6;
+            --marron: #6D4C41;
+            --noir: #3E2723;
+            --ombre-douce: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .login-card {
+            background: rgba(255, 249, 245, 0.98);
+            border-radius: 12px;
+            box-shadow: var(--ombre-douce);
+            border: 1px solid var(--taupe);
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+            overflow: hidden;
+        }
+
+        .login-header {
+            background: var(--marron);
+            color: var(--beige);
+            padding: 1.5rem;
+            text-align: center;
+            border-bottom: 3px solid var(--taupe);
+        }
+
+        .login-body {
+            padding: 2rem;
+        }
+
+        .login-footer {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: var(--marron);
+        }
+
+        .login-footer a {
+            color: var(--marron);
+            font-weight: 500;
+            text-decoration: underline;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <div class="login-card">
+            <div class="login-header">
+                <h2><i class="bi bi-envelope-check"></i> Email envoyé</h2>
+            </div>
+            
+            <div class="login-body">
+                <p>
+                    Si un compte correspondant à votre adresse email existe, un email contenant un lien de réinitialisation vient d'être envoyé.
+                    <br>
+                    Ce lien expirera dans 
+                    <strong>
+                        {{ resetToken.expirationMessageKey|trans(resetToken.expirationMessageData, 'ResetPasswordBundle') }}.
+                    </strong>
+                </p>
+                
+                <p>
+                    Si vous ne recevez pas d'email, vérifiez vos spams ou 
+                    <a href="{{ path('app_forgot_password_request') }}">essayez à nouveau</a>.
+                </p>
+                
+                <div class="login-footer mt-4">
+                    <a href="{{ path('app_login') }}"><i class="bi bi-box-arrow-in-left"></i> Retour à la connexion</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

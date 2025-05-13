@@ -22,6 +22,15 @@ final class CategoriesController extends AbstractController
         ]);
     }
 
+    #[Route('/categories', name: 'app_categories_public')]
+public function publicCategories(CategoriesRepository $rep): Response
+{
+    $categories = $rep->findAllWithBooks();
+    return $this->render('categories/public.html.twig', [
+        'categories' => $categories
+    ]);
+}
+
 
     #[Route('admin/categories/create', name: 'app_categories')]
     public function create(EntityManagerInterface $em,Request $request): Response

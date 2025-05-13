@@ -26,7 +26,7 @@ final class LivresController extends AbstractController
     }
 
     #[Route('/admin/livre/delete/{id}', name: 'app_livre_delete')]
-    public function delete(LivresRepository $rep, Livre $livre):Response
+    public function delete(LivresRepository $rep, Livres $livre):Response
     {
   //$livre=$rep->find($id);
   $rep->remove($livre);
@@ -52,21 +52,28 @@ final class LivresController extends AbstractController
     }
 
 
-    #[Route('/livres', name: 'app_livre_all1')]
-    public function all1(LivresRepository $rep, PaginatorInterface $paginator, Request $request): Response
-    {
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
-        $query = $rep->createQueryBuilder('l')->getQuery();
-        $livres = $paginator->paginate(
-            $query,
-            $request->query->getInt('page', 1),
-            8
-        );
-        
-        return $this->render('livres/index.html.twig', [
-            'livres' => $livres
-        ]);
-    }
+   #[Route('/livres', name: 'app_livre_all1')]
+public function all1(LivresRepository $rep, PaginatorInterface $paginator, Request $request): Response
+{
+    $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+    
+    $user = $this->getUser();
+    $query = $rep->createQueryBuilder('l')
+        ->leftJoin('l.favoris', 'f', 'WITH', 'f.user = :user')
+        ->addSelect('f')
+        ->setParameter('user', $user)
+        ->getQuery();
+    
+    $livres = $paginator->paginate(
+        $query,
+        $request->query->getInt('page', 1),
+        8
+    );
+    
+    return $this->render('livres/index.html.twig', [
+        'livres' => $livres
+    ]);
+}
 
 
 
@@ -129,7 +136,7 @@ final class LivresController extends AbstractController
     #[Route('admin/Livres/create', name: 'app_Livres_create')]
     public function create(EntityManagerInterface $em,Request $request): Response
     {
-        $livre=new Livre();
+        $livre=new Livres();
         $form=$this->createForm(LivresType::class,$livre);
         $form->handleRequest($request); //yasmaa ken fama des données soumises ou non __ Cette ligne permet à Symfony de remplir l’objet $categorie avec les données soumises 
         if($form->isSubmitted() && $form->isValid()){
@@ -145,4 +152,36 @@ final class LivresController extends AbstractController
         return $this->render('livres/create.html.twig',['form'=>$form]);
         
     }
+
+    #[Route('/toggle-favori/{id}', name: 'toggle_favori')]
+public function toggleFavori(Livre $livre, EntityManagerInterface $em): Response
+{
+    $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+    $user = $this->getUser();
+    
+    $favori = $em->getRepository(Favori::class)->findOneBy([
+        'user' => $user,
+        'livre' => $livre
+    ]);
+    
+    if ($favori) {
+        // Supprimer le favori s'il existe
+        $em->remove($favori);
+        $em->flush();
+        $this->addFlash('success', 'Livre retiré de vos favoris');
+    } else {
+        // Ajouter le favori s'il n'existe pas
+        $favori = new Favori();
+        $favori->setUser($user);
+        $favori->setLivre($livre);
+        $favori->setCreatedAt(new \DateTime());
+        
+        $em->persist($favori);
+        $em->flush();
+        $this->addFlash('success', 'Livre ajouté à vos favoris');
+    }
+    
+    return $this->redirectToRoute('app_livre_all1');
+}
+
 }

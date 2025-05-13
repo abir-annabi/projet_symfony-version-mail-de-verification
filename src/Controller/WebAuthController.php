@@ -65,6 +65,12 @@ public function register(
         'registrationForm' => $form->createView(),
     ]);
 }
+
+
+
+
+
+
     #[Route('/logout', name: 'app_logout')]
     public function logout(): void
     {

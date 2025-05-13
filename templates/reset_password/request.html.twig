@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mot de passe oublié | Kteby{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        /* Aucune modification ici car on reprend les mêmes styles que la page de login */
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <div class="login-card">
+            <div class="login-header">
+                <h2><i class="bi bi-key"></i> Réinitialisation du mot de passe</h2>
+            </div>
+            
+            <div class="login-body">
+                <p>
+                    Entrez votre adresse email et nous vous enverrons un lien pour réinitialiser votre mot de passe.
+                </p>
+                
+                {{ form_start(requestForm, {'attr': {'data-turbo': 'false'}}) }}
+                    <div class="mb-3">
+                        {{ form_label(requestForm.email, 'Email', {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(requestForm.email, {
+                            'attr': {
+                                'class': 'form-control',
+                                'placeholder': 'votre@email.com'
+                            }
+                        }) }}
+                        {{ form_errors(requestForm.email) }}
+                    </div>
+                    
+                    <button type="submit" class="btn btn-login">
+                        <i class="bi bi-envelope-paper-heart"></i> Envoyer l'email de réinitialisation
+                    </button>
+                {{ form_end(requestForm) }}
+                
+                <div class="login-footer">
+                    <a href="{{ path('app_login') }}"><i class="bi bi-box-arrow-in-left"></i> Retour à la connexion</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -27,8 +27,9 @@ class Categories
     /**
      * @var Collection<int, Livres>
      */
-    #[ORM\OneToMany(targetEntity: Livre::class, mappedBy: 'cat')]
-    private Collection $livres;
+// To this:
+    #[ORM\OneToMany(targetEntity: Livres::class, mappedBy: 'categorie')]  
+      private Collection $livres;
 
     #[ORM\Column(length: 255)]
     private ?string $slug = null;
@@ -75,7 +76,7 @@ class Categories
         return $this->livres;
     }
 
-    public function addLivre(Livre $livre): static
+    public function addLivre(Livres $livre): static
     {
         if (!$this->livres->contains($livre)) {
             $this->livres->add($livre);
@@ -85,7 +86,7 @@ class Categories
         return $this;
     }
 
-    public function removeLivre(Livre $livre): static
+    public function removeLivre(Livres $livre): static
     {
         if ($this->livres->removeElement($livre)) {
             // set the owning side to null (unless already changed)

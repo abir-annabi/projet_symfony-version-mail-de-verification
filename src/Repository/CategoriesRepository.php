@@ -16,6 +16,16 @@ class CategoriesRepository extends ServiceEntityRepository
         parent::__construct($registry, Categories::class);
     }
 
+    // src/Repository/CategoriesRepository.php
+public function findAllWithBooks()
+{
+    return $this->createQueryBuilder('c')
+        ->leftJoin('c.livres', 'l')  // 'livres' doit correspondre au nom de la propriété dans votre entité Category
+        ->addSelect('l')
+        ->orderBy('c.libelle', 'ASC')
+        ->getQuery()
+        ->getResult();
+}
     //    /**
     //     * @return Categories[] Returns an array of Categories objects
     //     */

@@ -1,0 +1,259 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nos Catégories Littéraires{% endblock %}
+
+{% block stylesheets %}
+<style>
+    :root {
+        --marron-fonce: #3A2E28;
+        --marron-doré: #8B6B4A;
+        --beige-creme: #F5F0E6;
+        --beige-clair: #E8DCCD;
+        --texte-noir: #2A211C;
+        --doré: #C8A97E;
+    }
+
+    .category-section {
+        padding: 6rem 2rem;
+        background: var(--beige-creme);
+        background-image: radial-gradient(circle at 10% 20%, rgba(139, 107, 74, 0.05) 0%, rgba(245, 240, 230, 1) 90%);
+    }
+
+    .section-header {
+        text-align: center;
+        margin-bottom: 5rem;
+    }
+
+    .section-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 3rem;
+        color: var(--marron-fonce);
+        margin-bottom: 1rem;
+        position: relative;
+        display: inline-block;
+    }
+
+    .section-title:after {
+        content: "";
+        position: absolute;
+        bottom: -15px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100px;
+        height: 3px;
+        background: linear-gradient(90deg, transparent, var(--marron-doré), transparent);
+    }
+
+    .section-subtitle {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 1.3rem;
+        color: var(--marron-doré);
+        font-style: italic;
+        letter-spacing: 1px;
+    }
+
+    .category-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 3rem;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .category-card {
+        background: white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 15px 40px -15px rgba(58, 46, 40, 0.15);
+        transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        position: relative;
+        border-top: 3px solid var(--doré);
+    }
+
+    .category-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 25px 50px -15px rgba(58, 46, 40, 0.2);
+    }
+
+    .category-header {
+        padding: 2.5rem 2rem;
+        background: white;
+        position: relative;
+        text-align: center;
+        border-bottom: 1px solid var(--beige-clair);
+    }
+
+    .category-header:before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--marron-doré), var(--doré));
+    }
+
+    .category-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.6rem;
+        color: var(--marron-fonce);
+        margin: 0;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+    }
+
+    .category-body {
+        padding: 2rem;
+    }
+
+    .books-count {
+        display: inline-flex;
+        align-items: center;
+        background: var(--beige-clair);
+        color: var(--marron-doré);
+        padding: 0.4rem 1.2rem;
+        border-radius: 50px;
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 1.8rem;
+    }
+
+    .books-count:before {
+        content: "✧";
+        margin-right: 0.6rem;
+        color: var(--doré);
+    }
+
+    .books-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .book-item {
+        padding: 0.8rem 0;
+        border-bottom: 1px dashed var(--beige-clair);
+        display: flex;
+        align-items: center;
+        transition: all 0.3s;
+    }
+
+    .book-item:hover {
+        background: rgba(139, 107, 74, 0.03);
+    }
+
+    .book-icon {
+        color: var(--doré);
+        margin-right: 1rem;
+        font-size: 1.1rem;
+        min-width: 20px;
+    }
+
+    .book-title {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 1.1rem;
+        color: var(--texte-noir);
+        transition: all 0.3s;
+        font-weight: 500;
+        line-height: 1.5;
+    }
+
+    .book-title:hover {
+        color: var(--marron-doré);
+        padding-left: 5px;
+    }
+
+    .view-all {
+        display: inline-flex;
+        align-items: center;
+        margin-top: 1.5rem;
+        color: var(--marron-doré);
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 1.1rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s;
+    }
+
+    .view-all:after {
+        content: "→";
+        margin-left: 0.5rem;
+        transition: all 0.3s;
+    }
+
+    .view-all:hover {
+        color: var(--marron-fonce);
+    }
+
+    .view-all:hover:after {
+        transform: translateX(5px);
+    }
+
+    .empty-message {
+        color: var(--marron-doré);
+        font-family: 'Cormorant Garamond', serif;
+        font-style: italic;
+        text-align: center;
+        padding: 1rem 0;
+        font-size: 1.1rem;
+    }
+
+    /* Animation */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .category-card {
+        animation: fadeInUp 0.8s ease-out forwards;
+        opacity: 0;
+        animation-delay: calc(var(--index) * 0.1s);
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<section class="category-section">
+    <div class="section-header">
+        <h1 class="section-title">Notre Collection Littéraire</h1>
+        <p class="section-subtitle">Parcourez nos catégories soigneusement sélectionnées</p>
+    </div>
+    
+    <div class="category-grid">
+      {% for category in categories %}
+<div class="category-card" style="--index: {{ loop.index }};">
+    <div class="category-header">
+        <h2 class="category-title">{{ category.libelle }}</h2>
+    </div>
+    <div class="category-body">
+        <span class="books-count">
+            {{ category.livres|length }} œuvre{{ category.livres|length > 1 ? 's' : '' }}
+        </span>
+        
+        {% if category.livres|length > 0 %}
+        <ul class="books-list">
+            {% for livre in category.livres %} {# Retirez le slice pour afficher tous les livres #}
+            <li class="book-item">
+                <i class="bi bi-book book-icon"></i>
+                <a href="{{ path('app_livre_show', {'id': livre.id}) }}" class="book-title">
+                    {{ livre.titre }}
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p class="empty-message">Collection à venir</p>
+        {% endif %}
+    </div>
+</div>
+{% endfor %}
+    </div>
+</section>
+{% endblock %}

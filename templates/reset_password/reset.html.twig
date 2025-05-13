@@ -1,0 +1,72 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouveau mot de passe | Kteby{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        :root {
+            --blanc-creme: #FFF9F5;
+            --beige: #F5E9E0;
+            --taupe: #D8C4B6;
+            --marron: #6D4C41;
+            --noir: #3E2723;
+            --ombre-douce: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .login-card {
+            background: rgba(255, 249, 245, 0.98);
+            border-radius: 12px;
+            box-shadow: var(--ombre-douce);
+            border: 1px solid var(--taupe);
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+            overflow: hidden;
+        }
+
+        .login-header {
+            background: var(--marron);
+            color: var(--beige);
+            padding: 1.5rem;
+            text-align: center;
+            border-bottom: 3px solid var(--taupe);
+        }
+
+        .login-body {
+            padding: 2rem;
+        }
+
+        .btn-login {
+            background-color: var(--marron);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 6px;
+            font-weight: 600;
+            margin-top: 1rem;
+        }
+
+        .btn-login:hover {
+            background-color: #5a3b31;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <div class="login-card">
+            <div class="login-header">
+                <h2><i class="bi bi-key-fill"></i> Créer un nouveau mot de passe</h2>
+            </div>
+            
+            <div class="login-body">
+                {{ form_start(resetForm) }}
+                    {{ form_row(resetForm.plainPassword) }}
+                    
+                    <button class="btn btn-login">Réinitialiser le mot de passe</button>
+                {{ form_end(resetForm) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}

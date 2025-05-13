@@ -32,14 +32,50 @@ class Livres
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $dateEdition = null;
 
+    //#[ORM\OneToMany(mappedBy: 'livre', targetEntity: Favori::class)]
+private Collection $favoris;
+
+public function __construct()
+{
+    //$this->favoris = new ArrayCollection();
+}
+
+public function getFavoris(): Collection
+{
+    return $this->favoris;
+}
+
+public function addFavori(Favori $favori): self
+{
+    if (!$this->favoris->contains($favori)) {
+        $this->favoris[] = $favori;
+        $favori->setLivre($this);
+    }
+
+    return $this;
+}
+
+public function removeFavori(Favori $favori): self
+{
+    if ($this->favoris->removeElement($favori)) {
+        if ($favori->getLivre() === $this) {
+            $favori->setLivre(null);
+        }
+    }
+
+    return $this;
+}
+
+
     #[ORM\Column]
     private ?float $prix = null;
 
     #[ORM\Column(length: 255)]
     private ?string $isbn = null;
 
-    #[ORM\ManyToOne(inversedBy: 'livres')]
-    private ?Categories $cat = null;
+    #[ORM\ManyToOne(targetEntity: Categories::class, inversedBy: 'livres')]
+#[ORM\JoinColumn(name: 'id', referencedColumnName: 'id')] // Explicitly map to your 'id' column
+private ?Categories $categorie = null;
 
   
     public function getId(): ?int
@@ -143,17 +179,16 @@ class Livres
         return $this;
     }
 
-    public function getCat(): ?Categories
-    {
-        return $this->cat;
-    }
+   public function getCategorie(): ?Categories
+{
+    return $this->categorie;
+}
 
-    public function setCat(?Categories $cat): static
-    {
-        $this->cat = $cat;
-
-        return $this;
-    }
+public function setCategorie(?Categories $categorie): static
+{
+    $this->categorie = $categorie;
+    return $this;
+}
 
 
 }
