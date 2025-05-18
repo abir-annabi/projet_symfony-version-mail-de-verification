@@ -19,6 +19,7 @@
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 2rem;
             padding: 2rem;
+            min-height: 60vh; /* Hauteur minimale pour éviter les sauts */
         }
         
         .book-card {
@@ -118,7 +119,6 @@
             display: flex;
             align-items: center;
             font-size: 0.9rem;
-            text-decoration: none;
         }
         
         .btn-add-to-cart:hover {
@@ -128,31 +128,6 @@
         
         .btn-add-to-cart i {
             margin-right: 0.5rem;
-        }
-
-        .btn-details {
-            background: var(--taupe);
-            color: var(--noir);
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            font-size: 0.9rem;
-            text-decoration: none;
-            margin-left: 0.5rem;
-        }
-        
-        .btn-details:hover {
-            background: var(--marron);
-            color: white;
-            transform: translateY(-2px);
-        }
-        
-        .action-buttons {
-            display: flex;
         }
         
         .page-header {
@@ -196,6 +171,79 @@
             border-color: var(--taupe);
             color: white;
         }
+        
+        /* Styles pour la barre de recherche */
+        .search-container {
+            margin-bottom: 2rem;
+            padding: 0 2rem;
+        }
+        
+        #search-input {
+            border-radius: 6px 0 0 6px;
+            border: 1px solid var(--taupe);
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            color: var(--marron);
+        }
+        
+        #search-input:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(109, 76, 65, 0.2);
+            border-color: var(--marron);
+        }
+        
+        #search-button {
+            border-radius: 0 6px 6px 0;
+            background-color: var(--marron);
+            color: white;
+            border: 1px solid var(--marron);
+            transition: all 0.3s;
+        }
+        
+        #search-button:hover {
+            background-color: var(--noir);
+            border-color: var(--noir);
+        }
+        
+        /* Styles pour les états de chargement */
+        .loading-spinner {
+            animation: spin 1s linear infinite;
+            width: 2rem;
+            height: 2rem;
+            border: 3px solid rgba(0,0,0,0.1);
+            border-radius: 50%;
+            border-top-color: var(--marron);
+            margin: 2rem auto;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 3rem;
+            grid-column: 1 / -1;
+        }
+        .bg-taupe {
+    background-color: var(--taupe);
+}
+
+.btn-marron {
+    background-color: var(--marron);
+    color: white;
+    border: none;
+}
+
+.btn-marron:hover {
+    background-color: var(--noir);
+}
+
+/* Style pour les inputs */
+.form-control:focus {
+    border-color: var(--taupe);
+    box-shadow: 0 0 0 0.25rem rgba(109, 76, 65, 0.25);
+}
     </style>
 {% endblock %}
 
@@ -205,7 +253,52 @@
     <p>Découvrez nos œuvres littéraires sélectionnées</p>
 </div>
 
-<div class="book-gallery">
+<div class="search-container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="input-group">
+                <input type="text" 
+                       id="search-input" 
+                       class="form-control" 
+                       placeholder="Rechercher par titre, auteur, catégorie..."
+                       aria-label="Rechercher">
+                <button class="btn" type="button" id="search-button">
+                    <i class="bi bi-search"></i> Rechercher
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container mb-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-taupe text-white">
+                    <i class="bi bi-funnel"></i> Filtre par prix
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-5">
+                            <label for="minPrice" class="form-label">Prix minimum (DT)</label>
+                            <input type="number" class="form-control" id="minPrice" placeholder="0">
+                        </div>
+                        <div class="col-md-5">
+                            <label for="maxPrice" class="form-label">Prix maximum (DT)</label>
+                            <input type="number" class="form-control" id="maxPrice" placeholder="100">
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button class="btn btn-marron w-100" id="filterPriceBtn">
+                                <i class="bi bi-filter"></i> Filtrer
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="book-gallery" id="books-container">
     {% for livre in livres %}
     <div class="book-card">
         {% if livre.image %}
@@ -234,18 +327,14 @@
             <span class="book-category">{{ livre.categorie.libelle }}</span>
             
             <div class="book-actions">
-                <div class="action-buttons">
-                    <a href="{{ path('app_panier_add', {'id': livre.id}) }}" class="btn-add-to-cart">
-                        <i class="bi bi-cart-plus"></i>
-                        Ajouter
-                    </a>
-                    <a href="{{ path('app_livre_show', {'id': livre.id}) }}" class="btn-details">
-                        <i class="bi bi-eye"></i>
-                        Détails
-                    </a>
- 
-
-                </div>
+                <a href="{{ path('app_panier_add', {'id': livre.id}) }}" class="btn-add-to-cart">
+                    <i class="bi bi-cart-plus"></i>
+                    Ajouter
+                </a>
+                
+                <a href="{{ path('app_livre_show', {'id': livre.id}) }}" class="text-muted">
+                    <i class="bi bi-info-circle"></i>
+                </a>
             </div>
         </div>
     </div>
@@ -255,4 +344,129 @@
 <div class="pagination-container">
     {{ knp_pagination_render(livres) }}
 </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('search-input');
+            const searchButton = document.getElementById('search-button');
+            const booksContainer = document.getElementById('books-container');
+            const paginationContainer = document.querySelector('.pagination-container');
+            const minPriceInput = document.getElementById('minPrice');
+            const maxPriceInput = document.getElementById('maxPrice');
+            const filterPriceBtn = document.getElementById('filterPriceBtn');
+            
+            async function performSearch() {
+                const searchTerm = searchInput.value.trim();
+                
+                if (searchTerm.length === 0) {
+                    window.location.reload();
+                    return;
+                }
+                
+                try {
+                    // Afficher un indicateur de chargement
+                    booksContainer.innerHTML = `
+                        <div class="loading-container" style="grid-column: 1 / -1; text-align: center; padding: 2rem;">
+                            <div class="loading-spinner"></div>
+                            <p>Recherche en cours...</p>
+                        </div>
+                    `;
+                    
+                    paginationContainer.style.display = 'none';
+                    
+                    const response = await fetch(`{{ path('app_livre_search') }}?q=${encodeURIComponent(searchTerm)}`);
+                    
+                    if (!response.ok) throw new Error('Erreur réseau');
+                    
+                    const html = await response.text();
+                    
+                    booksContainer.innerHTML = html;
+                    paginationContainer.style.display = 'none';
+                    
+                } catch (error) {
+                    console.error('Erreur:', error);
+                    booksContainer.innerHTML = `
+                        <div class="no-results">
+                            <i class="bi bi-exclamation-triangle-fill text-danger" style="font-size: 2rem;"></i>
+                            <p class="text-muted">Une erreur est survenue lors de la recherche</p>
+                            <button onclick="window.location.reload()" class="btn btn-outline-secondary">
+                                Recharger la page
+                            </button>
+                        </div>
+                    `;
+                }
+            }
+            
+            searchButton.addEventListener('click', performSearch);
+            
+            searchInput.addEventListener('keyup', function(event) {
+                if (event.key === 'Enter') performSearch();
+            });
+            
+            // Optionnel: Recherche en temps réel avec délai
+            let searchTimeout;
+            searchInput.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                if (searchInput.value.length > 2) {
+                    searchTimeout = setTimeout(performSearch, 500);
+                }
+            });
+            
+            //filtrage par prix
+            async function filterByPrice() {
+                const minPrice = minPriceInput.value;
+                const maxPrice = maxPriceInput.value;
+
+                if (!minPrice || !maxPrice) {
+                    alert('Veuillez saisir les deux prix');
+                    return;
+                }
+
+                if (parseFloat(minPrice) > parseFloat(maxPrice)) {
+                    alert('Le prix minimum ne peut pas être supérieur au prix maximum');
+                    return;
+                }
+
+                try {
+                    booksContainer.innerHTML = `
+                        <div class="loading-container" style="grid-column: 1 / -1; text-align: center; padding: 2rem;">
+                            <div class="loading-spinner"></div>
+                            <p>Filtrage en cours...</p>
+                        </div>
+                    `;
+
+                    const response = await fetch(`{{ path('app_livre_filter_price') }}?minPrice=${minPrice}&maxPrice=${maxPrice}`);
+                    
+                    if (!response.ok) throw new Error('Erreur réseau');
+                    
+                    const html = await response.text();
+                    booksContainer.innerHTML = html;
+                    paginationContainer.style.display = 'none';
+                    
+                } catch (error) {
+                    console.error('Erreur:', error);
+                    booksContainer.innerHTML = `
+                        <div class="no-results">
+                            <i class="bi bi-exclamation-triangle-fill text-danger"></i>
+                            <p class="text-muted">Erreur lors du filtrage</p>
+                        </div>
+                    `;
+                }
+            }
+
+            filterPriceBtn.addEventListener('click', filterByPrice);
+
+            // Filtrage automatique quand les deux champs sont remplis
+            [minPriceInput, maxPriceInput].forEach(input => {
+                input.addEventListener('change', () => {
+                    if (minPriceInput.value && maxPriceInput.value) {
+                        filterByPrice();
+                    }
+                });
+            });
+        });
+    </script>
 {% endblock %}

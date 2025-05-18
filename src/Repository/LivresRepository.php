@@ -15,6 +15,16 @@ class LivresRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Livre::class);
     }
+     public function findLivresLesPlusVendus(): array
+{
+    return $this->createQueryBuilder('l')
+        ->select('l.titre AS titre, COUNT(oi.id) AS total')
+        ->join('l.orderItems', 'oi')
+        ->groupBy('l.id')
+        ->orderBy('total', 'DESC')
+        ->getQuery()
+        ->getResult();
+}
 
     //    /**
     //     * @return Livres[] Returns an array of Livres objects

@@ -1,0 +1,42 @@
+{% for livre in livres %}
+<div class="book-card">
+    {% if livre.image %}
+        <img src="{{ livre.image }}" alt="{{ livre.titre }}" class="book-cover">
+    {% else %}
+        <div class="default-cover">
+            <i class="bi bi-book"></i>
+        </div>
+    {% endif %}
+    
+    <div class="book-details">
+        <h3 class="book-title">{{ livre.titre }}</h3>
+        
+        <div class="book-meta">
+            <i class="bi bi-pencil"></i>
+            <span>{{ livre.editeur }}</span>
+        </div>
+        
+        <div class="book-meta">
+            <i class="bi bi-calendar"></i>
+            <span>Publié le {{ livre.dateEdition|date("d/m/Y") }}</span>
+        </div>
+        
+        <div class="book-price">{{ livre.prix }} DT</div>
+        
+        <span class="book-category">{{ livre.categorie.libelle }}</span>
+        
+        <div class="book-actions">
+            <a href="{{ path('app_panier_add', {'id': livre.id}) }}" class="btn-add-to-cart">
+                <i class="bi bi-cart-plus"></i>
+                Ajouter
+            </a>
+            
+            <a href="#" class="text-muted"><i class="bi bi-info-circle"></i></a>
+        </div>
+    </div>
+</div>
+{% else %}
+    <div class="col-12">
+        <p class="text-center text-muted">Aucun livre trouvé</p>
+    </div>
+{% endfor %}

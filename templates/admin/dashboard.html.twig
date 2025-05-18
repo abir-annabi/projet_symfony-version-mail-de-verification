@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de Bord | Admin</title>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --blanc-creme: #FFF9F5;
+            --beige: #F5E9E0;
+            --taupe: #D8C4B6;
+            --marron: #6D4C41;
+            --noir: #3E2723;
+            --vert-olive: #8B9E6B;
+            --bleu-pale: #A5C4D4;
+            --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        body {
+            font-family: 'Poppins', 'Segoe UI', sans-serif;
+            background-color: var(--blanc-creme);
+            color: var(--noir);
+            line-height: 1.6;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(245, 233, 224, 0.8) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(168, 196, 212, 0.3) 0%, transparent 25%);
+        }
+
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .dashboard-header {
+            text-align: center;
+            margin-bottom: 4rem;
+            position: relative;
+        }
+
+        .dashboard-title {
+            font-size: 3rem;
+            font-weight: 600;
+            color: transparent;
+            background: linear-gradient(135deg, var(--marron) 30%, var(--noir) 70%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            margin-bottom: 1rem;
+            position: relative;
+            display: inline-block;
+        }
+
+        .dashboard-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--taupe), var(--vert-olive));
+            border-radius: 2px;
+        }
+
+        .dashboard-subtitle {
+            color: var(--marron);
+            font-weight: 300;
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .period-selector {
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            box-shadow: 
+                0 8px 32px rgba(62, 39, 35, 0.1),
+                inset 0 0 0 1px rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: var(--transition);
+        }
+
+        .period-selector:hover {
+            box-shadow: 
+                0 12px 40px rgba(62, 39, 35, 0.15),
+                inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+        }
+
+        .form-label {
+            color: var(--marron);
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            letter-spacing: 0.5px;
+        }
+
+        .form-control, .form-select {
+            border: 1px solid var(--beige);
+            padding: 0.85rem 1.25rem;
+            border-radius: 12px;
+            transition: var(--transition);
+            background: rgba(255, 255, 255, 0.8);
+            font-size: 0.95rem;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--vert-olive);
+            box-shadow: 0 0 0 3px rgba(139, 158, 107, 0.2);
+            background: white;
+        }
+
+        .btn-dashboard {
+            background: linear-gradient(135deg, var(--marron), var(--noir));
+            border: none;
+            padding: 1rem 1.75rem;
+            border-radius: 12px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            height: 100%;
+            box-shadow: 
+                0 4px 15px rgba(109, 76, 65, 0.2),
+                inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-dashboard::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                to bottom right,
+                rgba(255, 255, 255, 0.3) 0%,
+                rgba(255, 255, 255, 0) 60%
+            );
+            transform: rotate(30deg);
+            transition: var(--transition);
+        }
+
+        .btn-dashboard:hover {
+            transform: translateY(-3px);
+            box-shadow: 
+                0 8px 25px rgba(109, 76, 65, 0.3),
+                inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-dashboard:hover::before {
+            transform: rotate(30deg) translate(10%, 10%);
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(550px, 1fr));
+            gap: 3rem;
+            margin-bottom: 4rem;
+        }
+
+        .chart-card {
+            border-radius: 20px;
+            overflow: hidden;
+            transition: var(--transition);
+            box-shadow: 
+                0 10px 30px rgba(62, 39, 35, 0.1),
+                inset 0 0 0 1px rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .chart-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 
+                0 15px 40px rgba(62, 39, 35, 0.15),
+                inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+        }
+
+        .chart-header {
+            background: linear-gradient(135deg, var(--taupe), var(--vert-olive));
+            color: white;
+            padding: 1.75rem 2rem;
+            position: relative;
+        }
+
+        .chart-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--beige), var(--bleu-pale)));
+        }
+
+        .chart-title {
+            margin: 0;
+            font-size: 1.6rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+            color: white;
+            letter-spacing: 0.5px;
+        }
+
+        .chart-subtitle {
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 0.95rem;
+            margin-top: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .chart-body {
+            padding: 2rem;
+        }
+
+        .chart-container {
+            width: 100%;
+            height: 400px;
+            border-radius: 0 0 20px 20px;
+            overflow: hidden;
+        }
+
+        @media (max-width: 992px) {
+            .dashboard-title {
+                font-size: 2.4rem;
+            }
+            
+            .charts-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            
+            .chart-container {
+                height: 350px;
+            }
+            
+            .period-selector {
+                padding: 1.5rem;
+            }
+        }
+
+        /* Animation d'entrée */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .dashboard-header, .period-selector, .chart-card {
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+
+        .period-selector {
+            animation-delay: 0.1s;
+        }
+
+        .chart-card:nth-child(1) {
+            animation-delay: 0.2s;
+        }
+
+        .chart-card:nth-child(2) {
+            animation-delay: 0.3s;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="dashboard-container">
+        <header class="dashboard-header">
+            <h1 class="dashboard-title">
+                <i class="bi bi-speedometer"></i> Tableau de Bord
+            </h1>
+            <p class="dashboard-subtitle">Analyse et visualisation des données en temps réel</p>
+        </header>
+        
+        <!-- Formulaire de sélection de période -->
+        <div class="period-selector">
+            <form method="get" action="{{ path('admin_dashboard') }}" class="row g-4 align-items-end">
+                <div class="col-lg-4">
+                    <label for="start_date" class="form-label">
+                        <i class="bi bi-calendar2-week"></i> Date de début
+                    </label>
+                    <input type="date" class="form-control" id="start_date" name="start_date" 
+                           value="{{ start_date }}" required>
+                </div>
+                <div class="col-lg-4">
+                    <label for="end_date" class="form-label">
+                        <i class="bi bi-calendar2-week-fill"></i> Date de fin
+                    </label>
+                    <input type="date" class="form-control" id="end_date" name="end_date" 
+                           value="{{ end_date }}" required>
+                </div>
+                <div class="col-lg-4">
+                    <button type="submit" class="btn btn-dashboard w-100">
+                        <i class="bi bi-funnel"></i> Appliquer
+                    </button>
+                </div>
+            </form>
+        </div>
+        
+        <div class="charts-grid">
+            <!-- Carte des livres les plus vendus -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h2 class="chart-title">
+                        <i class="bi bi-book-half"></i> Best Sellers
+                    </h2>
+                    <p class="chart-subtitle">
+                        <i class="bi bi-bar-chart-line"></i> Classement des livres les plus populaires
+                    </p>
+                </div>
+                <div class="chart-body">
+                    <div id="livre_plus_vendu" class="chart-container"></div>
+                </div>
+            </div>
+            
+            <!-- Carte des commandes par période -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h2 class="chart-title">
+                        <i class="bi bi-graph-up-arrow"></i> Activité Commerciale
+                    </h2>
+                    <p class="chart-subtitle">
+                        <i class="bi bi-calendar-range"></i> Période : {{ start_date|date('d/m/Y') }} - {{ end_date|date('d/m/Y') }}
+                    </p>
+                </div>
+                <div class="chart-body">
+                    <div id="commandes_par_periode" class="chart-container"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        google.charts.load('current', {'packages':['corechart']});
+        google.charts.setOnLoadCallback(drawCharts);
+
+        function drawCharts() {
+            // 1. Graphique des livres les plus vendus
+            var dataLivres = new google.visualization.DataTable();
+            dataLivres.addColumn('string', 'Livre');
+            dataLivres.addColumn('number', 'Ventes');
+            dataLivres.addRows([
+                {% for l in livresVendus %}
+                    ['{{ l.titre|e('js') }}', {{ l.total }}]{% if not loop.last %},{% endif %}
+                {% endfor %}
+            ]);
+
+            var optionsLivres = {
+                title: '',
+                pieHole: 0.4,
+                backgroundColor: 'transparent',
+                colors: ['#D8C4B6', '#A78B7D', '#6D4C41', '#8B9E6B', '#A5C4D4'],
+                legend: {
+                    position: 'right',
+                    textStyle: {
+                        color: '#6D4C41',
+                        fontSize: 12,
+                        fontName: 'Poppins',
+                        bold: true
+                    }
+                },
+                pieSliceText: 'value',
+                pieSliceTextStyle: {
+                    color: '#3E2723',
+                    fontName: 'Poppins',
+                    bold: true
+                },
+                chartArea: {
+                    width: '90%',
+                    height: '85%',
+                    backgroundColor: {
+                        stroke: '#F5E9E0',
+                        strokeWidth: 1
+                    }
+                },
+                tooltip: {
+                    text: 'percentage',
+                    textStyle: {
+                        fontName: 'Poppins'
+                    }
+                }
+            };
+
+            var chartLivres = new google.visualization.PieChart(
+                document.getElementById('livre_plus_vendu')
+            );
+            chartLivres.draw(dataLivres, optionsLivres);
+
+            // 2. Graphique des commandes par période
+            var dataCommandes = new google.visualization.DataTable();
+            dataCommandes.addColumn('string', 'Date');
+            dataCommandes.addColumn('number', 'Commandes');
+            dataCommandes.addColumn({type: 'string', role: 'tooltip', p: {'html': true}});
+            
+            {% for c in commandesParPeriode %}
+                dataCommandes.addRow([
+                    '{{ c.date }}', 
+                    {{ c.total }},
+                    `<div style="padding: 0.75rem; font-family: Poppins; background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); border: 1px solid #F5E9E0">
+                        <div style="color: #6D4C41; font-weight: 600; margin-bottom: 0.25rem;">{{ c.date }}</div>
+                        <div style="color: #3E2723; font-size: 1.1rem; font-weight: 700;">${ {{ c.total }} } commandes</div>
+                    </div>`
+                ]);
+            {% endfor %}
+
+            var optionsCommandes = {
+                title: '',
+                backgroundColor: 'transparent',
+                colors: ['#6D4C41'],
+                legend: { 
+                    position: 'none' 
+                },
+                bar: { 
+                    groupWidth: '65%' 
+                },
+                hAxis: {
+                    title: 'Date',
+                    titleTextStyle: {
+                        color: '#6D4C41',
+                        bold: true,
+                        fontSize: 13,
+                        fontName: 'Poppins'
+                    },
+                    textStyle: {
+                        color: '#6D4C41',
+                        fontSize: 11,
+                        fontName: 'Poppins'
+                    },
+                    slantedText: true,
+                    slantedTextAngle: 45,
+                    gridlines: {
+                        color: 'transparent'
+                    }
+                },
+                vAxis: {
+                    title: 'Commandes',
+                    titleTextStyle: {
+                        color: '#6D4C41',
+                        bold: true,
+                        fontSize: 13,
+                        fontName: 'Poppins'
+                    },
+                    textStyle: {
+                        color: '#6D4C41',
+                        fontSize: 11,
+                        fontName: 'Poppins'
+                    },
+                    gridlines: {
+                        color: '#F5E9E0',
+                        count: 5
+                    },
+                    minorGridlines: {
+                        color: '#F5E9E0',
+                        count: 1
+                    },
+                    minValue: 0
+                },
+                chartArea: {
+                    width: '85%',
+                    height: '75%',
+                    backgroundColor: {
+                        stroke: '#F5E9E0',
+                        strokeWidth: 1
+                    }
+                },
+                animation: {
+                    startup: true,
+                    duration: 1000,
+                    easing: 'out'
+                },
+                tooltip: {
+                    isHtml: true,
+                    trigger: 'focus'
+                }
+            };
+
+            var chartCommandes = new google.visualization.ColumnChart(
+                document.getElementById('commandes_par_periode')
+            );
+            chartCommandes.draw(dataCommandes, optionsCommandes);
+        }
+
+        window.addEventListener('resize', function() {
+            if (window.google && window.google.visualization) {
+                drawCharts();
+            }
+        });
+    </script>
+</body>
+</html>

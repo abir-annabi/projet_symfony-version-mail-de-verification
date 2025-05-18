@@ -40,4 +40,39 @@ class OrderRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+    public function countCommandesParPeriode(?\DateTimeInterface $start, ?\DateTimeInterface $end): array
+{
+    $qb = $this->createQueryBuilder('o')
+        ->select('o.id, o.createdAt');
+
+    if ($start) {
+        $qb->andWhere('o.createdAt >= :start')
+           ->setParameter('start', $start->format('Y-m-d 00:00:00'));
+    }
+
+    if ($end) {
+        $qb->andWhere('o.createdAt <= :end')
+           ->setParameter('end', $end->format('Y-m-d 23:59:59'));
+    }
+
+    $results = $qb->orderBy('o.createdAt', 'ASC')
+                 ->getQuery()
+                 ->getResult();
+
+    // Regrouper par jour
+    $grouped = [];
+    foreach ($results as $row) {
+        $date = $row['createdAt']->format('Y-m-d');
+        $grouped[$date] = ($grouped[$date] ?? 0) + 1;
+    }
+
+    // Formatage pour le graphique
+    return array_map(function($date, $count) {
+        return [
+            'date' => (new \DateTime($date))->format('d/m/Y'), // Format français
+            'total' => $count
+        ];
+    }, array_keys($grouped), $grouped);
+}
+
 }

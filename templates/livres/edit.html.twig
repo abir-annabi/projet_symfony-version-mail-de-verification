@@ -1,0 +1,227 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}📖 Modifier un Livre{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        :root {
+            --blanc-creme: #FFF9F5;
+            --beige: #F5E9E0;
+            --taupe: #D8C4B6;
+            --marron: #6D4C41;
+            --noir: #3E2723;
+        }
+
+        .book-edit-container {
+            max-width: 700px;
+            margin: 3rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .book-edit-card {
+            background: var(--blanc-creme);
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(62, 39, 35, 0.12);
+            overflow: hidden;
+            border: 1px solid var(--taupe);
+            position: relative;
+        }
+
+        .book-edit-card::before {
+            content: "📚";
+            font-size: 120px;
+            position: absolute;
+            opacity: 0.08;
+            right: 20px;
+            top: 20px;
+            z-index: 0;
+        }
+
+        .book-edit-header {
+            background: linear-gradient(135deg, var(--beige) 0%, var(--taupe) 100%);
+            padding: 1.8rem 2rem;
+            position: relative;
+        }
+
+        .book-edit-title {
+            color: var(--noir);
+            font-weight: 700;
+            margin: 0;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .book-edit-title::before {
+            content: "✏️";
+            font-size: 1.5rem;
+        }
+
+        .book-edit-body {
+            padding: 2.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .form-group {
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .form-group::after {
+            content: "📖";
+            position: absolute;
+            right: -30px;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0.3;
+            font-size: 1.2rem;
+        }
+
+        .form-label {
+            color: var(--marron);
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-label::before {
+            font-size: 1rem;
+        }
+
+        #livre_form_titre + .form-label::before { content: "📌"; }
+        #livre_form_auteur + .form-label::before { content: "✍️"; }
+        #livre_form_date_publication + .form-label::before { content: "📅"; }
+        #livre_form_resume + .form-label::before { content: "📝"; }
+        #livre_form_genre + .form-label::before { content: "🏷️"; }
+
+        .form-control {
+            background: white;
+            border: 2px solid var(--taupe);
+            border-radius: 10px;
+            padding: 1rem 1.25rem;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            box-shadow: inset 0 2px 4px rgba(62, 39, 35, 0.05);
+        }
+
+        .form-control:focus {
+            border-color: var(--marron);
+            box-shadow: 0 0 0 4px rgba(109, 76, 65, 0.2);
+        }
+
+        textarea.form-control {
+            min-height: 150px;
+        }
+
+        .btn-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px dashed var(--taupe);
+        }
+
+        .btn-update {
+            background-color: var(--marron);
+            color: white;
+            border: none;
+            padding: 1rem 2.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 12px rgba(109, 76, 65, 0.2);
+        }
+
+        .btn-update:hover {
+            background-color: var(--noir);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(62, 39, 35, 0.25);
+        }
+
+        .btn-update::before {
+            content: "💾";
+        }
+
+        .btn-back {
+            color: var(--marron);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-back:hover {
+            color: var(--noir);
+            transform: translateX(-3px);
+        }
+
+        .btn-back::before {
+            content: "←";
+        }
+
+        .alert-book {
+            background: rgba(245, 233, 224, 0.8);
+            color: var(--noir);
+            border-left: 5px solid var(--marron);
+            border-radius: 0 8px 8px 0;
+            padding: 1rem 1.5rem;
+            margin-bottom: 2rem;
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .alert-book::before {
+            content: "ℹ️";
+            font-size: 1.2rem;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="book-edit-container">
+        <div class="book-edit-card">
+            <div class="book-edit-header">
+                <h2 class="book-edit-title">
+                    Modifier : {{ livre.titre }}
+                </h2>
+            </div>
+
+            <div class="book-edit-body">
+                {% for message in app.flashes('success') %}
+                    <div class="alert alert-book alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+
+                {{ form_start(form) }}
+                    <div class="form-container">
+                        {{ form_widget(form) }}
+                    </div>
+                    <div class="btn-container">
+                        <a href="{{ path('app_livre_all') }}" class="btn-back">
+                            Retour à la liste
+                        </a>
+                        <button type="submit" class="btn-update">
+                            Enregistrer
+                        </button>
+                    </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}

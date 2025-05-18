@@ -132,6 +132,45 @@ public function all1(LivresRepository $rep, PaginatorInterface $paginator, Reque
     }*/
 
 
+    #[Route('/livres/search', name: 'app_livre_search')]
+public function search(Request $request, LivresRepository $rep): Response
+{
+    $searchTerm = $request->query->get('q', '');
+    
+    $livres = $rep->createQueryBuilder('l')
+        ->where('l.titre LIKE :searchTerm')
+        ->orWhere('l.editeur LIKE :searchTerm')
+        ->orWhere('l.isbn LIKE :searchTerm')
+        ->orWhere('l.resume LIKE :searchTerm')
+        ->leftJoin('l.categorie', 'c')
+        ->orWhere('c.libelle LIKE :searchTerm')
+        ->setParameter('searchTerm', '%'.$searchTerm.'%')
+        ->getQuery()
+        ->getResult();
+    
+    return $this->render('livres/_search_results.html.twig', [
+        'livres' => $livres
+    ]);
+}
+#[Route('/livres/filter-by-price', name: 'app_livre_filter_price')]
+public function filterByPrice(Request $request, LivresRepository $rep): Response
+{
+    $minPrice = $request->query->get('minPrice');
+    $maxPrice = $request->query->get('maxPrice');
+
+    $livres = $rep->createQueryBuilder('l')
+        ->where('l.prix >= :minPrice')
+        ->andWhere('l.prix <= :maxPrice')
+        ->setParameter('minPrice', $minPrice)
+        ->setParameter('maxPrice', $maxPrice)
+        ->getQuery()
+        ->getResult();
+
+    return $this->render('livres/_search_results.html.twig', [
+        'livres' => $livres
+    ]);
+}
+
 
     #[Route('admin/Livres/create', name: 'app_Livres_create')]
     public function create(EntityManagerInterface $em,Request $request): Response
@@ -152,6 +191,25 @@ public function all1(LivresRepository $rep, PaginatorInterface $paginator, Reque
         return $this->render('livres/create.html.twig',['form'=>$form]);
         
     }
+
+    #[Route('/admin/livre/edit/{id}', name: 'app_livre_edit')]
+public function edit(Livre $livre, Request $request, EntityManagerInterface $em): Response
+{
+    $form = $this->createForm(LivresType::class, $livre);
+    $form->handleRequest($request);
+
+    if ($form->isSubmitted() && $form->isValid()) {
+        $em->flush();
+        $this->addFlash('success', 'Le livre a été modifié avec succès.');
+        return $this->redirectToRoute('app_livre_all');
+    }
+
+    return $this->render('livres/edit.html.twig', [
+        'form' => $form->createView(),
+        'livre' => $livre
+    ]);
+}
+
 
     #[Route('/toggle-favori/{id}', name: 'toggle_favori')]
 public function toggleFavori(Livre $livre, EntityManagerInterface $em): Response
